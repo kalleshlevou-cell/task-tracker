@@ -30,9 +30,15 @@ export const useTasks = () => {
       params.order = filters.order;
 
       const res = await taskApi.getAll(params);
-      setTasks(res.data);
-      setPagination(res.pagination);
+      const payload = res?.data ?? res;
+      const taskList = Array.isArray(payload) ? payload : payload?.data ?? [];
+      const paginationData = payload?.pagination ?? { total: 0, page: 1, pages: 1 };
+
+      setTasks(taskList);
+      setPagination(paginationData);
     } catch (err) {
+      setTasks([]);
+      setPagination({ total: 0, page: 1, pages: 1 });
       toast.error(err.message);
     } finally {
       setLoading(false);
@@ -42,8 +48,10 @@ export const useTasks = () => {
   const fetchStats = useCallback(async () => {
     try {
       const res = await taskApi.getStats();
-      setStats(res.data);
+      const payload = res?.data ?? res;
+      setStats(payload ?? null);
     } catch (_) {
+      setStats(null);
       // stats are non-critical
     }
   }, []);

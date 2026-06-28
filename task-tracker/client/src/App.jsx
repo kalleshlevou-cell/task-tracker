@@ -82,7 +82,7 @@ function App() {
           <div className="section-header">
             <h2 className="section-title">
               Tasks
-              {pagination.total > 0 && (
+              {(pagination?.total ?? 0) > 0 && (
                 <span className="task-count">{pagination.total}</span>
               )}
             </h2>
