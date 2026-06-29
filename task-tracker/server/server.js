@@ -39,9 +39,8 @@ const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
 
   if (!uri || uri.includes('<username>') || uri.includes('<password>')) {
-    console.error('❌  MONGODB_URI is not set. Please update server/.env with your real MongoDB connection string.');
-    console.error('    Get a free URI from https://cloud.mongodb.com → Connect → Drivers');
-    process.exit(1);
+    console.warn('⚠️  MONGODB_URI is not set. Running with the built-in in-memory task store for local development.');
+    return;
   }
 
   try {
@@ -49,13 +48,13 @@ const connectDB = async () => {
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
     console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
+    console.warn('Falling back to the in-memory task store.');
   }
 };
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
+    console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
     console.log(`   Health check → http://localhost:${PORT}/api/health`);
   });
 });
